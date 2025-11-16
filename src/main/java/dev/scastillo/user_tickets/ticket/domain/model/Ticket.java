@@ -1,10 +1,8 @@
 package dev.scastillo.user_tickets.ticket.domain.model;
 
+import dev.scastillo.user_tickets.user.domain.model.User;
 import dev.scastillo.user_tickets.utils.enums.TicketStatus;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,7 +24,11 @@ public class Ticket {
     @GeneratedValue(generator = "UUID")
     private UUID id;
     private String description;
-    private UUID userId;
+    //private UUID userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     @CreationTimestamp
     private LocalDateTime createAt;
     @UpdateTimestamp

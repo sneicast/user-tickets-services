@@ -4,10 +4,12 @@ import dev.scastillo.user_tickets.user.adapter.web.dto.UserCreateDto;
 import dev.scastillo.user_tickets.user.adapter.web.dto.UserDto;
 import dev.scastillo.user_tickets.user.adapter.web.mapper.UserMapper;
 import dev.scastillo.user_tickets.user.domain.services.UserServices;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("api/users")
@@ -17,7 +19,7 @@ public class UserController {
     private final UserMapper userMapper;
 
     @PostMapping
-    public UserDto createUser(@RequestBody UserCreateDto userCreateDto) {
+    public UserDto createUser(@RequestBody @Valid UserCreateDto userCreateDto) {
         var user = userMapper.toDomain(userCreateDto);
         var createdUser = userServices.createUser(user);
         return userMapper.toDto(createdUser);
@@ -36,9 +38,9 @@ public class UserController {
                 .toList();
     }
     @PutMapping("/{id}")
-    public void updateUser(@PathVariable("id") String id, @RequestBody UserCreateDto userUpdateDto) {
+    public void updateUser(@PathVariable("id") UUID id, @RequestBody @Valid UserCreateDto userUpdateDto) {
         var user = userMapper.toDomain(userUpdateDto);
-        user.setId(java.util.UUID.fromString(id));
+        user.setId(id);
         userServices.updateUser(user);
     }
 }

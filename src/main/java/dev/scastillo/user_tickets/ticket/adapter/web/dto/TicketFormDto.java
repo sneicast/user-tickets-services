@@ -1,5 +1,8 @@
 package dev.scastillo.user_tickets.ticket.adapter.web.dto;
 import dev.scastillo.user_tickets.utils.enums.TicketStatus;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.util.UUID;
@@ -10,7 +13,13 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class TicketFormDto {
+    @NotNull(message = "El ID del usuario es obligatorio")
     private UUID userId;
+
+    @NotBlank(message = "La descripción es obligatoria")
+    @Size(max = 500, message = "La descripción no puede exceder 500 caracteres")
     private String description;
+
+    @NotNull(message = "El estado es obligatorio y debe ser ABIERTO o CERRADO")
     private TicketStatus status;
 }

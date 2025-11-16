@@ -1,12 +1,16 @@
 package dev.scastillo.user_tickets.user.application.service;
 
+import dev.scastillo.user_tickets.shared.exception.BadRequestException;
 import dev.scastillo.user_tickets.user.domain.model.User;
 import dev.scastillo.user_tickets.user.domain.repository.UserRepository;
 import dev.scastillo.user_tickets.user.domain.services.UserServices;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -15,8 +19,10 @@ public class UserServiceImpl implements UserServices {
     private final UserRepository userRepository;
 
     @Override
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public Page<User> getAllUsers(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createAt"));
+
+        return userRepository.findAll(pageable);
     }
 
     @Override
@@ -27,7 +33,7 @@ public class UserServiceImpl implements UserServices {
     @Override
     public User getUserById(UUID id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+                .orElseThrow(() -> new BadRequestException("USER_NOT_FOUND", "El usuario con ID " + id + " no existe"));
     }
 
     @Override

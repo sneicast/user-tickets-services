@@ -3,10 +3,7 @@ package dev.scastillo.user_tickets.ticket.domain.model;
 import dev.scastillo.user_tickets.user.domain.model.User;
 import dev.scastillo.user_tickets.utils.enums.TicketStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -19,19 +16,29 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Ticket {
     @Id
-    @GeneratedValue(generator = "UUID")
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", columnDefinition = "UUID")
     private UUID id;
+
+    @Column(name = "description", nullable = false, length = 500)
     private String description;
-    //private UUID userId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @CreationTimestamp
+    @Column(name = "create_at", updatable = false, columnDefinition = "TIMESTAMP WITH TIME ZONE")
     private LocalDateTime createAt;
+
     @UpdateTimestamp
+    @Column(name = "update_at", columnDefinition = "TIMESTAMP WITH TIME ZONE")
     private LocalDateTime updateAt;
+
+    @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
     private TicketStatus status;
 }

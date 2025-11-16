@@ -23,14 +23,21 @@ import java.util.UUID;
 @NoArgsConstructor
 public class User {
     @Id
-    @GeneratedValue(generator = "UUID")
-    //@GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+
+    @Column(name = "first_name", nullable = false, length = 100)
     private String firsName;
+
+    @Column(name = "last_name", nullable = false, length = 100)
     private String lastName;
+
     @CreationTimestamp
+    @Column(name = "create_at", updatable = false, columnDefinition = "TIMESTAMP WITH TIME ZONE")
     private LocalDateTime createAt;
+
     @UpdateTimestamp
+    @Column(name = "update_at", columnDefinition = "TIMESTAMP WITH TIME ZONE")
     private LocalDateTime updateAt;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)

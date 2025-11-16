@@ -1,23 +1,20 @@
 package dev.scastillo.user_tickets.ticket.adapter.web.controller;
 
-import dev.scastillo.user_tickets.shared.code_error.ErrorCode;
-import dev.scastillo.user_tickets.shared.exception.BadRequestException;
+import dev.scastillo.user_tickets.shared.dtos.PagedResponse;
 import dev.scastillo.user_tickets.ticket.adapter.web.dto.TicketDto;
 import dev.scastillo.user_tickets.ticket.adapter.web.dto.TicketFormDto;
 import dev.scastillo.user_tickets.ticket.adapter.web.mapper.TicketMapper;
+import dev.scastillo.user_tickets.ticket.domain.model.Ticket;
 import dev.scastillo.user_tickets.ticket.domain.service.TicketService;
 import dev.scastillo.user_tickets.user.domain.model.User;
 import dev.scastillo.user_tickets.user.domain.services.UserServices;
 import dev.scastillo.user_tickets.utils.enums.TicketStatus;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.boot.context.properties.bind.DefaultValue;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
-
-import static dev.scastillo.user_tickets.shared.code_error.ErrorCode.ROLE_NOT_FOUND;
 
 @RestController
 @RequestMapping("api/tickets")
@@ -28,7 +25,7 @@ public class TicketController {
     private final UserServices userServices;
 
     @PostMapping
-    public TicketDto createTicket(@RequestBody TicketFormDto ticketFormDto) {
+    public TicketDto createTicket(@RequestBody @Valid TicketFormDto ticketFormDto) {
         var ticket = ticketMapper.toDomain(ticketFormDto);
         User user = userServices.getUserById(ticketFormDto.getUserId());
         ticket.setUser(user);
@@ -44,22 +41,28 @@ public class TicketController {
     }
 
     @GetMapping
-    public List<TicketDto> getAllTickets(
+    public PagedResponse<TicketDto> getAllTickets(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "") UUID userId,
             @RequestParam(defaultValue = "") TicketStatus status
 
     ) {
-        var tickets = ticketService.getAllTickets(page, size, userId, status);
-
-        return tickets.stream()
+        Page<Ticket> tickets = ticketService.getAllTickets(page, size, userId, status);
+        PagedResponse<TicketDto> pagedResponse = new PagedResponse<>();
+        pagedResponse.setPage(tickets.getNumber());
+        pagedResponse.setSize(tickets.getSize());
+        pagedResponse.setTotalItems(tickets.getTotalElements());
+        pagedResponse.setTotalPages(tickets.getTotalPages());
+        pagedResponse.setData(tickets.getContent().stream()
                 .map(ticketMapper::toDto)
-                .toList();
+                .toList());
+        return pagedResponse;
+
     }
 
     @PutMapping("/{id}")
-    public void updateTicket(@PathVariable("id") UUID id, @RequestBody TicketFormDto ticketFormDto) {
+    public void updateTicket(@PathVariable("id") UUID id, @RequestBody @Valid TicketFormDto ticketFormDto) {
         var ticket = ticketMapper.toDomain(ticketFormDto);
         ticket.setId(id);
         ticketService.updateTicket(ticket);

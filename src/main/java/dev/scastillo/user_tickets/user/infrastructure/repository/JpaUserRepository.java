@@ -3,6 +3,8 @@ package dev.scastillo.user_tickets.user.infrastructure.repository;
 import dev.scastillo.user_tickets.user.domain.model.User;
 import dev.scastillo.user_tickets.user.domain.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -21,8 +23,8 @@ public class JpaUserRepository implements UserRepository {
     }
 
     @Override
-    public List<User> findAll() {
-        return repository.findAll();
+    public Page<User> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package dev.scastillo.user_tickets.ticket.application.service;
 
+import dev.scastillo.user_tickets.shared.exception.BadRequestException;
 import dev.scastillo.user_tickets.ticket.domain.model.Ticket;
 import dev.scastillo.user_tickets.ticket.domain.service.TicketService;
 import dev.scastillo.user_tickets.ticket.infrastructure.repository.JpaTicketRepository;
@@ -10,9 +11,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -21,7 +19,7 @@ public class TicketServiceImpl implements TicketService {
     private final JpaTicketRepository ticketRepository;
 
     @Override
-    public List<Ticket> getAllTickets(int page, int size, UUID userId, TicketStatus status) {
+    public Page<Ticket> getAllTickets(int page, int size, UUID userId, TicketStatus status) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createAt"));
         Page<Ticket> ticketsPage;
@@ -35,8 +33,8 @@ public class TicketServiceImpl implements TicketService {
         } else {
             ticketsPage = ticketRepository.findAll(pageable);
         }
+        return ticketsPage;
 
-        return ticketsPage.getContent();
     }
 
     @Override
@@ -46,7 +44,7 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public Ticket getTicketById(UUID id) {
-        return ticketRepository.findById(id).orElseThrow(() -> new RuntimeException("Ticket not found with id: " + id));
+        return ticketRepository.findById(id).orElseThrow(() -> new BadRequestException("TICKET_NOT_FOUND", "El Ticket con ID " + id + " no existe"));
     }
 
     @Override

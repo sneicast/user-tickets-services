@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,7 +37,7 @@ public class UserController {
     )
     @ApiResponses(value = {
             @ApiResponse(
-                    responseCode = "200",
+                    responseCode = "201",
                     description = "Usuario creado exitosamente",
                     content = @Content(
                             mediaType = "application/json",
@@ -53,10 +54,10 @@ public class UserController {
             )
     })
     @PostMapping
-    public UserDto createUser(@RequestBody @Valid UserFormDto userFormDto) {
+    public ResponseEntity<UserDto>  createUser(@RequestBody @Valid UserFormDto userFormDto) {
         var user = userMapper.toDomain(userFormDto);
         var createdUser = userServices.createUser(user);
-        return userMapper.toDto(createdUser);
+        return ResponseEntity.status(HttpStatus.CREATED).body(userMapper.toDto(createdUser));
     }
 
     @Operation(
@@ -126,7 +127,7 @@ public class UserController {
     )
     @ApiResponses(value = {
             @ApiResponse(
-                    responseCode = "200",
+                    responseCode = "204",
                     description = "Usuario actualizado exitosamente"
             ),
             @ApiResponse(
@@ -147,9 +148,10 @@ public class UserController {
             )
     })
     @PutMapping("/{id}")
-    public void updateUser(@PathVariable("id") UUID id, @RequestBody @Valid UserFormDto userFormDto) {
+    public ResponseEntity<Void> updateUser(@PathVariable("id") UUID id, @RequestBody @Valid UserFormDto userFormDto) {
         var user = userMapper.toDomain(userFormDto);
         user.setId(id);
         userServices.updateUser(user);
+        return ResponseEntity.noContent().build();
     }
 }

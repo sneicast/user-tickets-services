@@ -20,6 +20,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -39,7 +41,7 @@ public class TicketController {
     )
     @ApiResponses(value = {
             @ApiResponse(
-                    responseCode = "200",
+                    responseCode = "201",
                     description = "Ticket creado exitosamente",
                     content = @Content(
                             mediaType = "application/json",
@@ -53,15 +55,15 @@ public class TicketController {
                             mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class)
                     )
-            )
+            ),
     })
     @PostMapping
-    public TicketDto createTicket(@RequestBody @Valid TicketFormDto ticketFormDto) {
+    public ResponseEntity<TicketDto> createTicket(@RequestBody @Valid TicketFormDto ticketFormDto) {
         var ticket = ticketMapper.toDomain(ticketFormDto);
         User user = userServices.getUserById(ticketFormDto.getUserId());
         ticket.setUser(user);
         var createdTicket = ticketService.createTicket(ticket);
-        return ticketMapper.toDto(createdTicket);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ticketMapper.toDto(createdTicket));
     }
 
     @Operation(
@@ -80,6 +82,14 @@ public class TicketController {
             @ApiResponse(
                     responseCode = "404",
                     description = "Ticket no encontrado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Error interno del servidor",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class)
@@ -113,14 +123,6 @@ public class TicketController {
                             schema = @Schema(implementation = ErrorResponse.class)
                     )
             ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "Error interno del servidor",
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorResponse.class)
-                    )
-            )
     })
     @GetMapping
     public PagedResponse<TicketDto> getAllTickets(
@@ -148,19 +150,25 @@ public class TicketController {
     )
     @ApiResponses(value = {
             @ApiResponse(
-                    responseCode = "200",
+                    responseCode = "204",
                     description = "Ticket actualizado exitosamente"
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Ticket no encontrado"
+                    description = "Ticket no encontrado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
             )
     })
     @PutMapping("/{id}")
-    public void updateTicket(@PathVariable("id") UUID id, @RequestBody @Valid TicketFormDto ticketFormDto) {
+    public ResponseEntity<Void>  updateTicket(@PathVariable("id") UUID id, @RequestBody @Valid TicketFormDto ticketFormDto) {
         var ticket = ticketMapper.toDomain(ticketFormDto);
         ticket.setId(id);
+        ticket.setUser(userServices.getUserById(ticketFormDto.getUserId()));
         ticketService.updateTicket(ticket);
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(
@@ -168,15 +176,16 @@ public class TicketController {
             description = "Elimina un ticket del sistema"
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Ticket eliminado exitosamente"),
-            @ApiResponse(responseCode = "400", description = "Ticket no encontrado", content = @Content(
+            @ApiResponse(responseCode = "204", description = "Ticket eliminado exitosamente"),
+            @ApiResponse(responseCode = "404", description = "Ticket no encontrado", content = @Content(
                     mediaType = "application/json",
                     schema = @Schema(implementation = ErrorResponse.class)
             ))
     })
     @DeleteMapping("/{id}")
-    public void deleteTicket(@PathVariable("id") UUID id) {
+    public ResponseEntity<Void> deleteTicket(@PathVariable("id") UUID id) {
         ticketService.deleteTicket(id);
+        return ResponseEntity.noContent().build();
     }
 
 }

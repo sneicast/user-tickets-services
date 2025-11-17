@@ -1,6 +1,7 @@
 package dev.scastillo.user_tickets.ticket.application.service;
 
 import dev.scastillo.user_tickets.shared.exception.BadRequestException;
+import dev.scastillo.user_tickets.shared.exception.NotFoundException;
 import dev.scastillo.user_tickets.ticket.domain.model.Ticket;
 import dev.scastillo.user_tickets.ticket.domain.service.TicketService;
 import dev.scastillo.user_tickets.ticket.infrastructure.repository.JpaTicketRepository;
@@ -44,12 +45,16 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public Ticket getTicketById(UUID id) {
-        return ticketRepository.findById(id).orElseThrow(() -> new BadRequestException("TICKET_NOT_FOUND", "El Ticket con ID " + id + " no existe"));
+        return ticketRepository.findById(id).orElseThrow(() -> new NotFoundException("TICKET_NOT_FOUND", "El Ticket con ID " + id + " no existe"));
     }
 
     @Override
     public void updateTicket(Ticket ticket) {
-
+        Ticket existingTicket = getTicketById(ticket.getId());
+        existingTicket.setUser(ticket.getUser());
+        existingTicket.setDescription(ticket.getDescription());
+        existingTicket.setStatus(ticket.getStatus());
+        ticketRepository.save(existingTicket);
     }
 
     @Override

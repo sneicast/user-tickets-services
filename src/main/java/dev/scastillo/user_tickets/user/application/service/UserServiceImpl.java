@@ -1,6 +1,7 @@
 package dev.scastillo.user_tickets.user.application.service;
 
 import dev.scastillo.user_tickets.shared.exception.BadRequestException;
+import dev.scastillo.user_tickets.shared.exception.NotFoundException;
 import dev.scastillo.user_tickets.user.domain.model.User;
 import dev.scastillo.user_tickets.user.domain.repository.UserRepository;
 import dev.scastillo.user_tickets.user.domain.services.UserServices;
@@ -33,12 +34,14 @@ public class UserServiceImpl implements UserServices {
     @Override
     public User getUserById(UUID id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException("USER_NOT_FOUND", "El usuario con ID " + id + " no existe"));
+                .orElseThrow(() -> new NotFoundException("USER_NOT_FOUND", "El usuario con ID " + id + " no existe"));
     }
 
     @Override
     public void updateUser(User user) {
-        User existingUser = userRepository.findById(user.getId())
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + user.getId()));
+        User existingUser = getUserById(user.getId());
+        existingUser.setFirsName(user.getFirsName());
+        existingUser.setLastName(user.getLastName());
+        userRepository.save(existingUser);
     }
 }

@@ -11,12 +11,18 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "tickets")
+@Table(name = "tickets",
+    indexes = {
+        @Index(name = "idx_ticket_user_id", columnList = "user_id"),
+        @Index(name = "idx_ticket_status", columnList = "status")
+    }
+)
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+
 public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

@@ -2,7 +2,6 @@ package dev.scastillo.user_tickets.shared.exception;
 
 import dev.scastillo.user_tickets.shared.dtos.ErrorResponse;
 import dev.scastillo.user_tickets.shared.dtos.FieldError;
-import org.hibernate.TypeMismatchException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;

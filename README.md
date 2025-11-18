@@ -12,7 +12,7 @@ API REST para la gestión de usuarios y tickets desarrollada con Spring Boot 3.5
 
 ### 1. Clonar el repositorio
 ```bash
-git clone <repository-url>
+git clone https://github.com/sneicast/user-tickets-services.git
 cd user-tickets-services
 ```
 
@@ -59,7 +59,6 @@ docker rm user-tickets-api
 ### Swagger UI
 Una vez levantado el proyecto, acceder a:
 - **Swagger UI**: http://localhost:8080/swagger-ui/index.html
-- **OpenAPI JSON**: http://localhost:8080/api-docs
 
 ### Postman Collection
 Importar la colección de Postman: [User-Tickets.postman_collection.json](./User-Tickets.postman_collection.json)
@@ -90,7 +89,7 @@ Importar la colección de Postman: [User-Tickets.postman_collection.json](./User
 ## 🧪 Ejecutar Tests
 
 ```bash
-mvn test
+mvn clean test
 ```
 
 ## 📄 Arquitectura

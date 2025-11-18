@@ -49,4 +49,9 @@ public class JpaUserRepository implements UserRepository {
             throw new InternalServerException("DATABASE_ERROR", "Error al acceder a la base de datos");
         }
     }
+
+    @Override
+    public void deleteAll() {
+        repository.deleteAll();
+    }
 }

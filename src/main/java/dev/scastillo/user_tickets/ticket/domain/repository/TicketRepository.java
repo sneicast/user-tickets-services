@@ -16,4 +16,6 @@ public interface TicketRepository {
     Page<Ticket> findByUserId(UUID userId, Pageable pageable);
     Page<Ticket> findByStatus (TicketStatus status, Pageable pageable);
     Page<Ticket> findByUserIdAndStatus (UUID userId, TicketStatus status, Pageable pageable);
+
+    void deleteAll();
 }

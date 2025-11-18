@@ -89,5 +89,10 @@ public class JpaTicketRepository implements TicketRepository {
         }
     }
 
+    @Override
+    public void deleteAll() {
+        repository.deleteAll();
+    }
+
 
 }

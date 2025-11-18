@@ -72,6 +72,7 @@ public class TicketServiceImpl implements TicketService {
     @Transactional
     @CacheEvict(cacheNames = "ticket", key = "#id")
     public void deleteTicket(UUID id) {
+        getTicketById(id);
         ticketRepository.deleteById(id);
     }
 }

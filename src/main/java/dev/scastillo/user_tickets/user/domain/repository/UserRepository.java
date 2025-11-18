@@ -10,5 +10,6 @@ public interface UserRepository {
     Optional<User> findById(UUID id);
     Page<User> findAll(Pageable pageable);
     User save(User user);
+    void deleteAll();
 
 }

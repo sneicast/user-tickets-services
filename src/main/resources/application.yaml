@@ -28,3 +28,5 @@ spring:
         format_sql: true
         jdbc:
           time_zone: America/Bogota
+server:
+  port: 8081
